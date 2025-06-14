@@ -1,0 +1,121 @@
+:root {
+    --sky: rgb(145, 248, 248); /* Day sky color */
+    --sun-moon: yellow; /* Day sun color */
+}
+
+:root.night {
+    --sun-moon: rgb(219, 219, 219); /* Night moon color */
+    --sky: #17153B; /* Night sky color */
+}
+
+body {
+    background-color: var(--sky);
+    transition: background-color 0.5s ease-in-out; /* Smooth transition for sky color */
+    overflow: hidden; /* Prevent scrollbars from content overflowing */
+    margin: 0; /* Remove default body margin */
+}
+
+#sun-moon {
+    width: 33vw;
+    height: 33vw;
+    position: absolute;
+    border-radius: 50%;
+    transform: translate(-50%, -50%); /* Center the element */
+    top: 50%;
+    left: 50%;
+    background-color: var(--sun-moon);
+    transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out; /* Smooth transition for sun/moon color and shadow */
+    /* Two box-shadows were overlapping, combine them or choose one. I'm combining for better effect. */
+    box-shadow: 0 0 40px var(--sun-moon), 0 0 100px var(--sun-moon); 
+    cursor: pointer; /* Indicate it's clickable */
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+#sun-moon.moon {
+    /* Combine or choose one, prefer stronger shadow for moon */
+    box-shadow: 0 0 100px var(--sun-moon), 0 0 200px var(--sun-moon); 
+}
+
+#sun-moon.moon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    /* Moon craters using radial gradients */
+    background:
+        radial-gradient(circle at 25% 30%, rgba(128,128,128,0.3) 0%, transparent 40%),
+        radial-gradient(circle at 60% 60%, rgba(128,128,128,0.4) 0%, transparent 30%),
+        radial-gradient(circle at 70% 20%, rgba(128,128,128,0.2) 0%, transparent 25%),
+        radial-gradient(circle at 40% 75%, rgba(128,128,128,0.25) 0%, transparent 35%);
+    z-index: 1; /* Ensure craters are above moon's main color but within the moon element */
+}
+
+/* This #sky seems to be intended for the background. */
+/* If #clouds is for clouds, then #sky should be the main container */
+/* I've changed the #sky in JS to target #clouds, so this #sky CSS might be redundant if it's not the main container for everything */
+/* Let's adjust its z-index for clarity with #clouds */
+#sky {
+    position: absolute; /* Changed to absolute to fill the screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 0; /* Stars will be in #sky, which is behind #clouds */
+}
+
+.star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px white; /* Glow for stars */
+}
+
+.cloud {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow:
+        -35px -10px 0px 15px #fff,
+        30px -20px 0px 20px #fff,
+        60px 0px 0px 10px #fff,
+        -20px 20px 0px 10px #fff,
+        40px 30px 0px 15px #fff;
+    width: 200px;
+    height: 100px;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.1)); /* Soft shadow for depth */
+    /* CSS variables will be set by JS */
+    --cloud-start-x: 0vw; 
+    --cloud-end-x: 100vw;
+    /* Combine animations on one line, separated by commas */
+    animation: moveCloud var(--cloud-duration) linear infinite alternate, 
+               float 5s ease-in-out infinite;
+    z-index: 5; /* Ensure clouds are above the sun/moon and stars */
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes moveCloud {
+    0% { left: var(--cloud-start-x); }
+    100% { left: var(--cloud-end-x); }
+}
+
+/* This #clouds element is the container for the clouds, positioned in the middle */
+#clouds {
+    position: absolute; /* Changed to absolute to place it correctly within the viewport */
+    top: 50%; /* Start at 50% of viewport height */
+    transform: translateY(-50%); /* Adjust to center vertically */
+    width: 100vw;
+    height: 50vh; /* Set height for the cloud container */
+    overflow: hidden; /* Ensure clouds stay within this container */
+    z-index: 1; /* Should be above #sky (0) but below #sun-moon (10) for layering */
+}
